@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+
+import re as _re
+import sqlparse as _sqlparse
+
+def pretty_sql(sql):
+    # get the indentation of the first line, so we can inject it into the sql
+    # statement later
+    indent = _re.match("\s*", sql).group()
+
+    # strip sql termination, to format() does not generate a second empty statement
+    # which produces silly newlines
+    (sql, term_subs) = _re.subn(";\s*$", "", sql)
+
+    sql = indent + _sqlparse.format(
+        sql,
+        reindent = True,
+        keyword_case = 'upper',
+        indent_width = 4,
+        indent_tabs = False,
+    ).replace("\n", "\n" + indent)
+
+    # remove empty lines
+    sql = _re.sub(r"^\s*\n", "", sql, _re.MULTILINE)
+
+    # append statement terminator on a seperate line, if one was specified
+    if term_subs:
+        sql += "\n" + indent + ";"
+
+    return sql
+
+
+if __name__ == '__main__':
+    import sys as _sys
+    print pretty_sql(_sys.stdin.read())
