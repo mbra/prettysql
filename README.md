@@ -9,5 +9,5 @@ You need the sqlparse module from pypi
 Formatting SQL statements
 =========================
 
-Format SQL statements by visually selecting them and pressing <leader>fs
+Format SQL statements by visually selecting them and pressing &lt;leader&gt;fs
 
