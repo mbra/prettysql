@@ -2,7 +2,7 @@
 
 import re as _re
 import sqlparse as _sqlparse
-
+import sqlparse.filters as _filters
 def pretty_sql(sql):
     # get the indentation of the first line, so we can inject it into the sql
     # statement later
@@ -29,7 +29,38 @@ def pretty_sql(sql):
 
     return sql
 
+class Line(object):
+
+    def __init__(self, step = "  ", level = 0, maxlen = 80):
+        self._maxlen = maxlen
+        self._items = list()
+
+    def append(self, item):
+        self._items.append(item)
+
+    def __len__(self):
+       return sum([len(y) for x, y in items])
+
+class IndentFilter(_filters.Filter):
+
+    def __init__(self):
+        self._lines = list()
+
+    def process(self, foo, stream):
+        """Process the token stream."""
+        for token_type, value in stream:
+            print "%r - %r" % (token_type, value)
+            yield token_type, value
+
+
+def format(sql):
+    stack = _sqlparse.engine.FilterStack()
+    stack.preprocess.append(_filters.KeywordCaseFilter('upper')) # uppercase keywords too
+    stack.preprocess.append(IndentFilter()) # add our custom filter
+    stack.postprocess.append(_sqlparse.filters.SerializerUnicode()) # tokens -> strings
+    return ''.join(stack.run(sql))
 
 if __name__ == '__main__':
     import sys as _sys
-    print pretty_sql(_sys.stdin.read())
+    #print pretty_sql(_sys.stdin.read())
+    print format(_sys.stdin.read())
