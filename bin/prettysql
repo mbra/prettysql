@@ -32,4 +32,4 @@ def pretty_sql(sql):
 
 if __name__ == '__main__':
     import sys as _sys
-    print pretty_sql(_sys.stdin.read())
+    print(pretty_sql(_sys.stdin.read()))
