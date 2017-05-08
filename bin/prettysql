@@ -8,11 +8,11 @@ import sqlparse as _sqlparse
 def pretty_sql(sql):
     # get the indentation of the first line, so we can inject it into the sql
     # statement later
-    indent = _re.match("\s*", sql).group()
+    indent = _re.match(r"\s*", sql).group()
 
     # strip sql termination, to format() does not generate a second empty statement
     # which produces silly newlines
-    (sql, term_subs) = _re.subn(";\s*$", "", sql)
+    (sql, term_subs) = _re.subn(r";\s*$", "", sql)
 
     sql = indent + _sqlparse.format(
         sql,
